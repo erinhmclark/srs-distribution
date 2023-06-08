@@ -19,7 +19,7 @@ def get_page_soup(url):
 
 
 def get_data_list(soup):
-    """ Get the main JSON data from JavaScript within a <script> tag. """
+    """ Get the main JSON data list of the branches from JavaScript within a <script> tag. """
     script = soup.find('a', id="gdpr_optIn").findNext('script')
     script_str = script.string.split('active: undefined,')[-1].strip()
     data = chompjs.parse_js_object(script_str)
@@ -28,32 +28,37 @@ def get_data_list(soup):
 
 def get_person_details(person):
     """ Get the details of a single person from the branch details page.  """
-    names = person.find('h6').text.split()
+    names = person.find('h6').string.split()
     first_name = ' '.join(names[0:-1])
     last_name = names[-1]
-    job_role = person.find('span').text
+    job_role = person.find('span').string
     email_address = person.find('a')['href'].replace('mailto:', '')
     email_address = email_address if '@' in email_address else ''
     phone_number_obj = person.find_all('a')[-1]
-    phone_number = phone_number_obj.text if 'tel' in phone_number_obj['href'] else ''
+    phone_number = phone_number_obj.string if 'tel' in phone_number_obj['href'] else ''
 
-    person_data = {
+    person_details = {
         'first_name': first_name,
         'last_name': last_name,
         'job_role': job_role,
         'email_address': email_address,
         'phone_number': phone_number
     }
-    return person_data
+    return person_details
 
 
-def get_branch_details(branch):
+def get_team_details(soup):
     """ Extract information for a branch. """
+    team_list = soup.find('h4', string='Meet the Team').find_next('div').find_all('div',
+                    {'class': 'col-12 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 col-xxxl-3 mb-3'})
+    return team_list
+
+
+def scrape_branch(branch):
     branch_url = f'{BASE_URL}{branch["BranchUrl"]}'
     branch_soup = get_page_soup(branch_url)
-    team_list = branch_soup.find('h4', text='Meet the Team').findNext('div') \
-                           .find_all('div',
-                           {'class': 'col-12 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 col-xxxl-3 mb-3'})
+    team_list = get_team_details(branch_soup)
+
     company = {'company_name': branch['BranchName']}
     branch_data = {
         'street_address': branch['StreetAddr'],
@@ -73,5 +78,5 @@ if __name__ == '__main__':
     find_branches_url = f'{BASE_URL}/en/markets/find-a-branch/'
     page_soup = get_page_soup(find_branches_url)
     branches_data = get_data_list(page_soup)
-    for branch_item in branches_data:
-        get_branch_details(branch_item)
+    for branch in branches_data:
+        scrape_branch(branch)
