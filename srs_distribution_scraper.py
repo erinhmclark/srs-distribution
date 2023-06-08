@@ -29,8 +29,8 @@ def get_data_list(soup):
 def get_branch_details(branch):
     branch_url = f'{BASE_URL}{branch["BranchUrl"]}'
     branch_soup = get_page_soup(branch_url)
-    team_list = branch_soup.find('h4', text='Meet the Team').findNext('div')\
-                            .findAll('div', {'class': 'col-12 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 col-xxxl-3 mb-3'})
+    team_list = branch_soup.find('h4', text='Meet the Team').findNext('div') \
+                           .findAll('div', {'class': 'col-12 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 col-xxxl-3 mb-3'})
 
     for person in team_list:
         names = person.find('h6').text.split()
@@ -57,7 +57,7 @@ def get_branch_details(branch):
             'zipcode': branch['ZipCd'],
             'url': branch_url
         }
-        insert_from_dict(SHEET_ID, 'Sheet1', person_data, )
+        insert_from_dict(SHEET_ID, 'Sheet1', person_data)
 
 
 if __name__ == '__main__':
