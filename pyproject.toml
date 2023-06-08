@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "srs-distribution"
+version = "0.1.0"
+description = ""
+authors = ["erinhmclark"]
+readme = "README.md"
+packages = [{include = "srs_distribution"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+bs4 = "^0.0.1"
+chompjs = "^1.2.2"
+gspread = "^5.9.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
