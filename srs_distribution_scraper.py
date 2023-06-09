@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import chompjs
 from insert_to_gsheet import insert_from_dict
 
+
 BASE_URL = 'https://www.srsdistribution.com'
 # Update the sheet ID here:
 SHEET_ID = ""
@@ -24,6 +25,13 @@ def get_data_list(soup):
     script_str = script.string.split('active: undefined,')[-1].strip()
     data = chompjs.parse_js_object(script_str)
     return data
+
+
+def get_team_details(soup):
+    """ Extract information for a branch. """
+    team_list = soup.find('h4', string='Meet the Team').find_next('div').find_all('div',
+                    {'class': 'col-12 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 col-xxxl-3 mb-3'})
+    return team_list
 
 
 def get_person_details(person):
@@ -45,13 +53,6 @@ def get_person_details(person):
         'phone_number': phone_number
     }
     return person_details
-
-
-def get_team_details(soup):
-    """ Extract information for a branch. """
-    team_list = soup.find('h4', string='Meet the Team').find_next('div').find_all('div',
-                    {'class': 'col-12 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 col-xxxl-3 mb-3'})
-    return team_list
 
 
 def scrape_branch(branch):
@@ -78,5 +79,5 @@ if __name__ == '__main__':
     find_branches_url = f'{BASE_URL}/en/markets/find-a-branch/'
     page_soup = get_page_soup(find_branches_url)
     branches_data = get_data_list(page_soup)
-    for branch in branches_data:
-        scrape_branch(branch)
+    for branch_details in branches_data:
+        scrape_branch(branch_details)
