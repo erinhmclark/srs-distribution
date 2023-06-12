@@ -1,9 +1,9 @@
 from typing import List
-
 import gspread
+from settings import SERVICE_ACCOUNT_JSON
 
 # note you need to generate this file in the local directory
-SA = gspread.service_account(filename='google_service_account.json')
+SA = gspread.service_account(filename=SERVICE_ACCOUNT_JSON)
 
 
 def check_for_headers(worksheet: gspread.Worksheet, headers: List[str]) -> None:

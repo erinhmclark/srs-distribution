@@ -5,11 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 import chompjs
 from insert_to_gsheet import insert_from_dict
-
-
-BASE_URL = 'https://www.srsdistribution.com'
-# Update the sheet ID here:
-SHEET_ID = ""
+from settings import BASE_URL, SHEET_ID, SHEET_TAB
 
 
 def get_page_soup(url):
@@ -56,6 +52,9 @@ def get_person_details(person):
 
 
 def scrape_branch(branch):
+    """ Scrape the details of a single branch, iterate through the team details,
+        and insert the result into a row of a google sheet.
+    """
     branch_url = f'{BASE_URL}{branch["BranchUrl"]}'
     branch_soup = get_page_soup(branch_url)
     team_list = get_team_details(branch_soup)
@@ -70,9 +69,8 @@ def scrape_branch(branch):
     }
     for person in team_list:
         person_data = get_person_details(person)
-        # This ensures the correct order for the Google sheet:
         final_dict = {**company, **person_data, **branch_data}
-        insert_from_dict(SHEET_ID, 'Sheet1', final_dict)
+        insert_from_dict(SHEET_ID, SHEET_TAB, final_dict)
 
 
 if __name__ == '__main__':
