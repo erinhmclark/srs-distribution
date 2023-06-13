@@ -20,6 +20,7 @@ There are a few steps needed to authenticate this application to insert into a G
 The first are of course to have an account and create a sheet, and the rest of the process is explained in detail 
 in the [documentation](https://docs.gspread.org/en/latest/oauth2.html). 
 Note that as this is a bot, the authentication method will be via Service Account.
+If you are already familiar with the process, then just follow the Quickstart section below!
 
 
 ### Quickstart
