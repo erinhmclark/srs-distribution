@@ -22,7 +22,6 @@ in the [documentation](https://docs.gspread.org/en/latest/oauth2.html).
 Note that as this is a bot, the authentication method will be via Service Account.
 If you are already familiar with the process, then just follow the Quickstart section below!
 
-
 ### Quickstart
 
 - Create a project [here](https://console.cloud.google.com/apis/dashboard).
