@@ -6,16 +6,17 @@ from bs4 import BeautifulSoup
 import chompjs
 from insert_to_gsheet import insert_from_dict
 from settings import BASE_URL, SHEET_ID, SHEET_TAB
+from typing import List, Dict, Union
 
 
-def get_page_soup(url):
+def get_page_soup(url: str) -> BeautifulSoup:
     """ Return a BeautifulSoup object for a given url. """
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
     return soup
 
 
-def get_data_list(soup):
+def get_data_list(soup: BeautifulSoup) -> Dict:
     """ Get the main JSON data list of the branches from JavaScript within a <script> tag. """
     script = soup.find('a', id="gdpr_optIn").findNext('script')
     script_str = script.string.split('active: undefined,')[-1].strip()
@@ -23,14 +24,14 @@ def get_data_list(soup):
     return data
 
 
-def get_team_details(soup):
+def get_team_details(soup: BeautifulSoup) -> List[BeautifulSoup]:
     """ Extract information for a branch. """
     team_list = soup.find('h4', string='Meet the Team').find_next('div').find_all('div',
                     {'class': 'col-12 col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-4 col-xxl-4 col-xxxl-3 mb-3'})
     return team_list
 
 
-def get_person_details(person):
+def get_person_details(person: BeautifulSoup) -> Dict[str, Union[str, None]]:
     """ Get the details of a single person from the branch details page.  """
     names = person.find('h6').string.split()
     first_name = ' '.join(names[0:-1])
@@ -51,7 +52,7 @@ def get_person_details(person):
     return person_details
 
 
-def scrape_branch(branch):
+def scrape_branch(branch: Dict[str, Union[str, int]]) -> None:
     """ Scrape the details of a single branch, iterate through the team details,
         and insert the result into a row of a google sheet.
     """
@@ -73,9 +74,16 @@ def scrape_branch(branch):
         insert_from_dict(SHEET_ID, SHEET_TAB, final_dict)
 
 
-if __name__ == '__main__':
+def srs_distribution_scraper():
     find_branches_url = f'{BASE_URL}/en/markets/find-a-branch/'
-    page_soup = get_page_soup(find_branches_url)
-    branches_data = get_data_list(page_soup)
-    for branch_details in branches_data:
-        scrape_branch(branch_details)
+    try:
+        page_soup = get_page_soup(find_branches_url)
+        branches_data = get_data_list(page_soup)
+        for branch_details in branches_data:
+            scrape_branch(branch_details)
+    except Exception as e:
+        print(f"An error occurred running SRS Distribution scraper: {str(e)}")
+
+
+if __name__ == '__main__':
+    srs_distribution_scraper()
